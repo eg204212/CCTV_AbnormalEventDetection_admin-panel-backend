@@ -15,17 +15,47 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Add product route
+// Add product
+// Add product
 router.post('/add', upload.single('image'), async (req, res) => {
   try {
-    const { name, description, features } = req.body;
+    const {
+      productCode,
+      name,
+      category,
+      shortDescription,
+      keyFeatures,
+      installationType,
+      unitPrice,
+      warranty,
+      detectableEvents
+    } = req.body;
+
     const image = req.file ? req.file.filename : '';
 
+    const parsedKeyFeatures = (() => {
+      if (!keyFeatures) return [];
+      if (Array.isArray(keyFeatures)) return keyFeatures;
+      return keyFeatures.split(',').map(f => f.trim()).filter(f => f.length > 0);
+    })();
+
+    const parsedDetectableEvents = (() => {
+      if (!detectableEvents) return [];
+      if (Array.isArray(detectableEvents)) return detectableEvents;
+      return detectableEvents.split(',').map(e => e.trim()).filter(e => e.length > 0);
+    })();
+
     const product = new Product({
+      productCode,
       name,
-      description,
-      imageUrl: image,
-      features: features.split(',').map(f => f.trim()),
+      category,
+      shortDescription,
+      keyFeatures: parsedKeyFeatures,
+      installationType,
+      unitPrice,
+      warranty,
+      detectableEvents: parsedDetectableEvents,
+      imageUrl: image
     });
 
     await product.save();
@@ -34,6 +64,7 @@ router.post('/add', upload.single('image'), async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Get all products
 router.get('/', async (req, res) => {
@@ -44,13 +75,42 @@ router.get('/', async (req, res) => {
 // Update product
 router.put('/:id', upload.single('image'), async (req, res) => {
   try {
-    const { name, description, features } = req.body;
+    const {
+      productCode,
+      name,
+      category,
+      shortDescription,
+      keyFeatures,
+      installationType,
+      unitPrice,
+      warranty,
+      detectableEvents
+    } = req.body;
+
     const image = req.file ? req.file.filename : null;
 
+    const parsedKeyFeatures = (() => {
+      if (!keyFeatures) return [];
+      if (Array.isArray(keyFeatures)) return keyFeatures;
+      return keyFeatures.split(',').map(f => f.trim()).filter(f => f.length > 0);
+    })();
+
+    const parsedDetectableEvents = (() => {
+      if (!detectableEvents) return [];
+      if (Array.isArray(detectableEvents)) return detectableEvents;
+      return detectableEvents.split(',').map(e => e.trim()).filter(e => e.length > 0);
+    })();
+
     const updatedData = {
+      productCode,
       name,
-      description,
-      features: features.split(',').map(f => f.trim()),
+      category,
+      shortDescription,
+      keyFeatures: parsedKeyFeatures,
+      installationType,
+      unitPrice,
+      warranty,
+      detectableEvents: parsedDetectableEvents
     };
 
     if (image) updatedData.imageUrl = image;

@@ -1,9 +1,15 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
+  productCode: String,
   name: String,
-  description: String,
-  features: [String],
+  category: String,
+  shortDescription: String,
+  keyFeatures: [String],
+  installationType: String,
+  unitPrice: Number,
+  warranty: String,
+  detectableEvents: [String],
   imageUrl: String,
 });
 
